@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+	has_many :microposts, dependent: :destroy
+
 	validates :name, presence: true, length: { maximum: 50 }
 	validates :email, presence: true, 
 		format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i } ,
@@ -10,6 +12,10 @@ class User < ActiveRecord::Base
 	has_secure_password
 
 	before_create :create_remember_token
+
+	def feed
+		Micropost.where(user_id: id)
+	end
 
 	def User.new_remember_token
 		SecureRandom.urlsafe_base64
